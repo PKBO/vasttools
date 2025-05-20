@@ -1,53 +1,46 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# docker_report.sh
-# Quick report of Docker container/image/cache usage, sorted by size.
-# Author: https://github.com/PKBO
+# Helper to convert Docker size string (e.g. "3.28GB") to bytes for sorting
+to_bytes() {
+  awk '
+    function unit_mult(u) {
+      if (u == "B") return 1;
+      if (u == "kB") return 1024;
+      if (u == "MB") return 1024*1024;
+      if (u == "GB") return 1024*1024*1024;
+      if (u == "TB") return 1024*1024*1024*1024;
+      return 1;
+    }
+    {
+      match($0, /([0-9.]+)([A-Za-z]+)/, arr);
+      printf "%.0f\n", arr[1]*unit_mult(arr[2])
+    }'
+}
 
-echo "=== 1) Running containers (sorted by SIZE) ==="
-docker ps \
-  --format 'table {{.Names}}\t{{.ID}}\t{{.Image}}\t{{.CreatedAt}}\t{{.RunningFor}}\t{{.Size}}' \
-  | tail -n +2 \
-  | sort -t$'\t' -k6 -h -r
-
-echo
-echo "=== 2) Stopped containers (sorted by SIZE) ==="
-docker ps -a --filter "status=exited" \
-  --format 'table {{.Names}}\t{{.ID}}\t{{.Image}}\t{{.CreatedAt}}\tExited {{.RunningFor}}\t{{.Size}}' \
-  | tail -n +2 \
-  | sort -t$'\t' -k6 -h -r
-
-echo
-echo "=== 3) Images (sorted by SIZE) ==="
-docker images \
-  --format 'table {{.Repository}}:{{.Tag}}\t{{.ID}}\t{{.CreatedSince}}\t{{.Size}}' \
-  | tail -n +2 \
-  | sort -t$'\t' -k4 -h -r
-
-echo
-echo "=== 4) Total build cache size ==="
-if docker builder df &>/dev/null; then
-  docker builder df 2>/dev/null | awk '/^Total build cache usage:/ { print $5, $6 }' \
-    || echo "Could not determine total build cache size."
-else
-  echo "Build cache info not available (use Docker 19.03+)."
-fi
+echo "=== 1) Images (sorted by SIZE) ==="
+docker system df -v \
+| awk '/^Images:/ {show=1; print "REPOSITORY:TAG\tIMAGE ID\tSIZE"} show && /^[^-]/ && !/^REPOSITORY/ && $0!="" {print} /^-/ {show=0}' \
+| awk 'NR==1 {print; next} { sz=$(NF-0); $NF=""; print $0"\t"sz }' \
+| awk 'NR==1 {print; next} { print $0 | "sort -t\"\t\" -k4,4h -r" }' \
+| column -t -s $'\t'
 
 echo
-echo "=== 5) Build cache entries (sorted by SIZE) ==="
-if docker builder df -v &>/dev/null; then
-  echo -e "SIZE\tCACHE ID"
-  docker builder df -v 2>/dev/null \
-    | awk '
-      /^Cache ID/ { id=$3 }
-      /^\s+[0-9]/ { print $1 "\t" id }
-    ' \
-    | sort -h -r
-else
-  echo "Detailed build cache info not available (use Docker 19.03+)."
-fi
+echo "=== 2) Containers (sorted by SIZE) ==="
+docker system df -v \
+| awk '/^Containers:/ {show=1; print "CONTAINER ID\tIMAGE\tCOMMAND\tLOCAL VOLUMES\tSIZE\tCREATED AT\tSTATUS\tNAMES"} show && /^[^-]/ && !/^CONTAINER/ && $0!="" {print} /^-/ {show=0}' \
+| awk 'NR==1 {print; next} { sz=$(NF-0); $NF=""; print $0"\t"sz }' \
+| awk 'NR==1 {print; next} { print $0 | "sort -t\"\t\" -k5,5h -r" }' \
+| column -t -s $'\t'
 
 echo
-echo "=== End of report ==="
-echo "Tip: Run as user with Docker access (in docker group or via sudo) for best results."
+echo "=== 3) Build cache (sorted by SIZE) ==="
+docker system df -v \
+| awk '/^Build cache:/ {show=1; print "CACHE ID\tCACHE TYPE\tSIZE\tCREATED AT\tLAST USED AT\tUSAGE\tSHAREABLE"} show && /^[^-]/ && !/^CACHE/ && $0!="" {print} /^-/ {show=0}' \
+| awk 'NR==1 {print; next} { sz=$(NF-0); $NF=""; print $0"\t"sz }' \
+| awk 'NR==1 {print; next} { print $0 | "sort -t\"\t\" -k3,3h -r" }' \
+| column -t -s $'\t'
+
+echo
+echo "=== 4) Docker disk usage summary ==="
+docker system df
