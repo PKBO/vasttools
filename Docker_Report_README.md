@@ -16,7 +16,7 @@ After running, you will see:
 On your target server or computer, run these commands:
 
 ```bash
-wget -O update_machine.sh <URL-TO-SCRIPT>
+wget -O update_machine.sh https://raw.githubusercontent.com/PKBO/vastdockersize/main/update_machine.sh
 chmod +x update_machine.sh
 ./update_machine.sh
 ```
@@ -69,6 +69,4 @@ If you are using a branch other than `main`, change the branch name in the wget 
 The script prints clear tables and summaries directly to the terminal.
 
 ## Author
-PKBO
-
 [PKBO](https://github.com/PKBO)
