@@ -17,7 +17,7 @@ Po spuštění zobrazí:
 Na cílovém serveru nebo počítači spusťte tyto příkazy:
 
 ```bash
-wget https://raw.githubusercontent.com/PKBO/vastdockersize/main/docker_report.sh
+wget -O docker_report.sh https://raw.githubusercontent.com/PKBO/vastdockersize/main/docker_report.sh
 chmod +x docker_report.sh
 ./docker_report.sh
 ```
