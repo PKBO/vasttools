@@ -1,3 +1,8 @@
+Tady je kompletní README.md, přesně podle požadavku:
+
+markdown
+Zkopírovat
+Upravit
 # Vast.ai Server Tools (`vasttools`)
 
 This repository contains several scripts to assist with managing GPU servers on platforms like Vast.ai. Each script focuses on a specific task such as safe OS upgrade, Docker cleanup, or fast reboot with GPU reinitialization.
@@ -10,11 +15,11 @@ This script safely updates Ubuntu-based servers running Docker and Vast.ai servi
 
 ### What the script does
 
-- Stops Docker and Vast.ai services safely
-- Displays Machine ID (recommended to back up)
-- Updates package lists
-- Upgrades packages
-- Disables automatic upgrades to prevent disruptions
+- Stops Docker and Vast.ai services safely  
+- Displays Machine ID (recommended to back up)  
+- Updates package lists  
+- Upgrades packages  
+- Disables automatic upgrades to prevent disruptions  
 - Restarts Docker and Vast.ai services
 
 ### Quick usage
@@ -23,7 +28,6 @@ This script safely updates Ubuntu-based servers running Docker and Vast.ai servi
 wget -O update_machine.sh https://raw.githubusercontent.com/PKBO/vasttools/main/update_machine.sh
 chmod +x update_machine.sh
 ./update_machine.sh
-
 Requirements
 Bash shell
 
@@ -68,18 +72,18 @@ Output
 Clean terminal output with sorted summaries of Docker space usage.
 
 ⚡ Fast Reboot with GPU Reinitialization (kexec.sh)
-This script allows a near-instant reboot of the system using kexec, without triggering BIOS/POST. This is especially useful when a GPU has "fallen off the PCIe bus" and needs to be re-initialized without full downtime.
+This script performs a near-instant reboot using kexec, which reinitializes PCIe devices (like NVIDIA GPUs) without running the full BIOS/POST cycle. Useful when a GPU falls off the bus and needs to be recovered.
 
 What the script does
-Automatically detects the newest installed kernel in /boot
+Detects the newest installed kernel from /boot
 
-Loads the kernel into memory with kexec -l
+Loads it into memory using kexec -l
 
-Immediately reboots into it using kexec -e
+Performs a fast reboot into the new kernel with kexec -e
 
-Reinitializes PCIe devices including GPUs
+Reinitializes all PCIe devices including GPUs
 
-Skips BIOS, keeping network mostly online (especially important for Vast.ai)
+Skips BIOS and usually avoids breaking SSH/ping (especially on Vast.ai)
 
 Quick usage
 bash
@@ -93,12 +97,10 @@ bash
 Zkopírovat
 Upravit
 kxreboot
-This triggers the fast reboot using the installed /usr/local/bin/safe-kexec.sh script.
-
 Files in this repo
-kexecinstall.sh – Installer
+kexecinstall.sh – Installer script
 
-kexec.sh – Core reboot logic
+kexec.sh – Core logic (installed to /usr/local/bin/safe-kexec.sh)
 
 Requirements
 Bash shell
@@ -110,4 +112,5 @@ kexec-tools (installed automatically)
 Root or sudo privileges
 
 Output
-Fast reboot with full PCIe reinitialization in 5–10 seconds. Vast.ai typically does not detect any downtime.
+Fast reboot with GPU and PCIe reinitialization in 5–10 seconds. Vast.ai typically does not register downtime.
+
