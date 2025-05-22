@@ -20,7 +20,7 @@ On your target server or computer, run these commands:
 bash
 Zkopírovat
 Upravit
-wget -O docker_report.sh https://raw.githubusercontent.com/PKBO/vastdockersize/main/docker_report.sh
+wget -O docker_report.sh https://raw.githubusercontent.com/PKBO/vasttools/main/docker_report.sh
 chmod +x docker_report.sh
 ./docker_report.sh
 If you are using a branch other than main, change the branch name in the wget URL accordingly.
@@ -35,8 +35,8 @@ The docker builder df command enabled (Docker 19.03+)
 Output
 The script prints clear tables and summaries directly to the terminal.
 
-Fast Reboot with PCIe/GPU Reinitialization (kexec.sh)
-This repository also includes a tool for ultra-fast reboot of the server using kexec, ideal for cases where a GPU has fallen off the PCIe bus (e.g., nvidia-smi no longer sees it), without requiring a full POST/BIOS reboot.
+Fast Reboot with GPU Reinitialization (kexec.sh)
+This repository also includes a script for fast system reboot using kexec, which reinitializes PCIe devices (e.g. NVIDIA GPUs) without a full BIOS/POST cycle. This is useful on GPU servers where a card has "fallen off the bus" and needs to be rediscovered by the system.
 
 What the script does
 After running, the script:
@@ -45,37 +45,42 @@ Detects the newest installed kernel from /boot
 
 Loads it into memory with kexec -l
 
-Performs a fast reboot with kexec -e (skipping BIOS, keeping networking up)
+Reboots directly into the new kernel using kexec -e (skipping BIOS/firmware stage)
 
-Typically restarts the system in under 10 seconds
+Reinitializes all PCIe devices including GPUs
+
+Typically completes the reboot in under 10 seconds
 
 Quick usage
-On your target server, run the following to install:
+Install the reboot tool with:
 
 bash
 Zkopírovat
 Upravit
 wget -O - https://raw.githubusercontent.com/PKBO/vasttools/main/kexecinstall.sh | bash
 source ~/.bashrc
-Once installed, you can simply reboot at any time using:
+Then trigger a fast reboot anytime with:
 
 bash
 Zkopírovat
 Upravit
 kxreboot
-This runs the main script located at /usr/local/bin/safe-kexec.sh.
+This executes the main script located at /usr/local/bin/safe-kexec.sh.
+
+Files in this repo
+kexecinstall.sh – Installer script
+
+kexec.sh – Core reboot logic (installed to /usr/local/bin/safe-kexec.sh)
 
 Requirements
+Bash shell
+
 Ubuntu or Debian-based system
 
-Installed kexec-tools (automatically handled by installer)
+kexec-tools (installed automatically)
 
 Root or sudo privileges
 
-Files in this repo
-kexecinstall.sh – Installer script for kexec reboot
-
-kexec.sh – The core logic script (installed to /usr/local/bin/)
-
 Output
-Fast reboot with minimal downtime and reinitialization of all PCIe devices including GPUs.
+Fast reboot with GPU and PCIe bus reset, typically with no downtime from Vast.ai’s perspective.
+
