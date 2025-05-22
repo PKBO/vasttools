@@ -1,116 +1,54 @@
-Tady je kompletní README.md, přesně podle požadavku:
+🔄 System Update Script (update_machine.sh)
+Safely updates your server, disables automatic upgrades, and restarts Docker and Vast.ai services.
 
-markdown
-Zkopírovat
-Upravit
-# Vast.ai Server Tools (`vasttools`)
+Features
+Stops Docker and Vast.ai services
 
-This repository contains several scripts to assist with managing GPU servers on platforms like Vast.ai. Each script focuses on a specific task such as safe OS upgrade, Docker cleanup, or fast reboot with GPU reinitialization.
+Displays the machine ID (for backup)
 
----
+Runs system update and upgrade
 
-## 🔄 Server Update Script (`update_machine.sh`)
+Disables unattended upgrades
 
-This script safely updates Ubuntu-based servers running Docker and Vast.ai services.
+Restarts Docker and Vast.ai
 
-### What the script does
-
-- Stops Docker and Vast.ai services safely  
-- Displays Machine ID (recommended to back up)  
-- Updates package lists  
-- Upgrades packages  
-- Disables automatic upgrades to prevent disruptions  
-- Restarts Docker and Vast.ai services
-
-### Quick usage
-
-```bash
-wget -O update_machine.sh https://raw.githubusercontent.com/PKBO/vasttools/main/update_machine.sh
-chmod +x update_machine.sh
-./update_machine.sh
-Requirements
-Bash shell
-
-Ubuntu or Debian-based system
-
-Docker installed and working
-
-Vast.ai service installed
-
-Root or sudo privileges
-
-Output
-Status messages and logs printed directly to the terminal.
-
-📦 Docker Usage Overview Script (docker_report.sh)
-This script gives you an overview of space used by Docker containers, images, and build cache.
-
-What the script does
-Lists running containers (sorted by size)
-
-Lists stopped containers (sorted by size)
-
-Lists Docker images (sorted by size)
-
-Shows total build cache size
-
-Lists individual cache entries (sorted by size)
-
-Quick usage
+Usage
 bash
 Zkopírovat
 Upravit
-wget -O docker_report.sh https://raw.githubusercontent.com/PKBO/vasttools/main/docker_report.sh
-chmod +x docker_report.sh
-./docker_report.sh
-Requirements
-Bash shell
+wget -O update_machine.sh https://raw.githubusercontent.com/PKBO/vasttools/main/update_machine.sh
+chmod +x update_machine.sh
+./update_machine.sh
+⚡ Fast Reboot Script (kexec.sh)
+Performs a near-instant reboot using kexec without BIOS/POST. Useful when GPUs fall off the PCIe bus.
 
-Docker 19.03+ with docker builder df support
+Features
+Detects the newest installed kernel
 
-Output
-Clean terminal output with sorted summaries of Docker space usage.
+Loads the kernel into memory via kexec -l
 
-⚡ Fast Reboot with GPU Reinitialization (kexec.sh)
-This script performs a near-instant reboot using kexec, which reinitializes PCIe devices (like NVIDIA GPUs) without running the full BIOS/POST cycle. Useful when a GPU falls off the bus and needs to be recovered.
+Reboots directly into the new kernel with kexec -e
 
-What the script does
-Detects the newest installed kernel from /boot
+Rescans PCIe and GPU devices
 
-Loads it into memory using kexec -l
+Typically reboots in under 10 seconds
 
-Performs a fast reboot into the new kernel with kexec -e
+Installation & Usage
+Install once:
 
-Reinitializes all PCIe devices including GPUs
-
-Skips BIOS and usually avoids breaking SSH/ping (especially on Vast.ai)
-
-Quick usage
 bash
 Zkopírovat
 Upravit
 wget -O - https://raw.githubusercontent.com/PKBO/vasttools/main/kexecinstall.sh | bash
 source ~/.bashrc
-Then run:
+Then reboot anytime with:
 
 bash
 Zkopírovat
 Upravit
 kxreboot
-Files in this repo
-kexecinstall.sh – Installer script
+License
+MIT
 
-kexec.sh – Core logic (installed to /usr/local/bin/safe-kexec.sh)
-
-Requirements
-Bash shell
-
-Ubuntu or Debian-based system
-
-kexec-tools (installed automatically)
-
-Root or sudo privileges
-
-Output
-Fast reboot with GPU and PCIe reinitialization in 5–10 seconds. Vast.ai typically does not register downtime.
-
+Author
+PKBO
