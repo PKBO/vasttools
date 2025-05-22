@@ -37,6 +37,47 @@ The script prints progress and service restarts directly to the terminal.
 
 [PKBO](https://github.com/PKBO)
 
+# docker_report.sh
+
+This repository contains the `docker_report.sh` script, which provides a detailed overview of Docker container, image, and build cache disk usage on your system.
+
+## What the script does
+
+After running, it displays:
+
+1. **Running containers** (sorted by size)
+2. **Stopped containers** (sorted by size)
+3. **Docker images** (sorted by size)
+4. **Detailed build cache entries**
+5. **Full output from `docker system df -v`**
+
+The script uses formatted `docker` CLI output and converts human-readable sizes into bytes for accurate sorting.
+
+## Quick usage
+
+On your target server or computer, run the following commands:
+
+```bash
+wget https://raw.githubusercontent.com/PKBO/vasttools/main/docker_report.sh
+chmod +x docker_report.sh
+./docker_report.sh
+```
+
+## Requirements
+
+- Bash shell  
+- Docker 19.03+ installed and available from the command line  
+- The `docker builder df` command must be supported
+
+## Output
+
+The script prints structured tables for containers and images (sorted by size), followed by build cache details and a raw summary of disk usage.
+
+## Author
+
+[PKBO](https://github.com/PKBO)
+
+
 # kexec.sh
 
 This repository contains the `kexec.sh` script, which enables a near-instant reboot of your system without BIOS/POST. Useful when a GPU has fallen off the PCIe bus and needs to be reinitialized.
