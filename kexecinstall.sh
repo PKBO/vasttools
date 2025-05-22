@@ -43,13 +43,10 @@ EOF
 
 chmod +x /usr/local/bin/safe-kexec.sh
 
-# Alias
-if ! grep -q 'alias kxreboot=' ~/.bashrc; then
-  echo "alias kxreboot='/usr/local/bin/safe-kexec.sh'" >> ~/.bashrc
-  echo "[INFO] Alias 'kxreboot' přidán do ~/.bashrc"
-else
-  echo "[INFO] Alias 'kxreboot' již existuje"
-fi
+# Globální alias do /etc/profile.d
+echo "alias kxreboot='/usr/local/bin/safe-kexec.sh'" > /etc/profile.d/kxreboot.sh
+chmod +x /etc/profile.d/kxreboot.sh
 
-echo "[INFO] Instalace dokončena. Pro aktivaci aliasu spusť:"
-echo "source ~/.bashrc"
+echo "[INFO] Alias 'kxreboot' přidán do /etc/profile.d/kxreboot.sh"
+echo "[INFO] Instalace dokončena. Pro aktivaci aliasu spusť nový shell nebo:"
+echo "source /etc/profile.d/kxreboot.sh"
